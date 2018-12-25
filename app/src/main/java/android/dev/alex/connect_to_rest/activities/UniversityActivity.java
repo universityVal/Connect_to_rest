@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.TextView;
 
+import java.io.IOException;
 import java.util.List;
 
 import retrofit2.Call;
@@ -28,13 +29,20 @@ public class UniversityActivity extends AppCompatActivity {
 
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("192.168.1.103")
+                .baseUrl("https://192.168.1.103:8080")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
-        GsonApiConnect gsonApiConnect = retrofit.create(GsonApiConnect.class);
+
+
+        GsonApiConnect gsonApiConnect = null;
+        try {
+            gsonApiConnect = retrofit.create(GsonApiConnect.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
 
         Call<List<University>> call = gsonApiConnect.getUniversities();
-
         call.enqueue(new Callback<List<University>>() {
             @Override
             public void onResponse(Call<List<University>> call, Response<List<University>> response) {
@@ -47,13 +55,13 @@ public class UniversityActivity extends AppCompatActivity {
                 List<University> universities = response.body();
                 for (University university : universities)
                 {
-                    String content="";
+                    String content=" ";
                     content +="ID: "+ university.getId()+"\n";
                     content +="Name: "+ university.getName()+"\n";
                     content +="Accreditation Level"+university.getAccreditation_level()+"\n";
                     content +="Creation Date"+university.getCreation_date()+"\n";
                     content +="Address"+university.getAddress()+"\n";
-                    content +="Phone"+university.getPhone()+"\n";
+                    content +="Phone"+university.getPhone()+"\n\n";
 
                     textviewDataUniversity.append(content);
 
@@ -65,5 +73,6 @@ public class UniversityActivity extends AppCompatActivity {
                 textviewDataUniversity.setText(t.getMessage());
             }
         });
+
     }
 }
